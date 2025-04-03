@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         val buttonStart:Button= findViewById(R.id.button_start)
         val buttonReset:Button= findViewById(R.id.button_reset)
         val inputText: EditText = findViewById(R.id.input_text)
-        var textView : TextView = findViewById(R.id.textView)
+        val textView : TextView = findViewById(R.id.textView)
         val radioButtonFast: RadioButton=findViewById(R.id.radioButton_fast)
         val radioButtonNormal: RadioButton=findViewById(R.id.radioButton_normal)
         val radioButtonSlow: RadioButton=findViewById(R.id.radioButton_slow)

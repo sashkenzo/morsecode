@@ -10,6 +10,8 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.os.Vibrator
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -39,6 +41,9 @@ class MainActivity : AppCompatActivity() {
         val radioButtonSlow: RadioButton=findViewById(R.id.radioButton_slow)
         val checkBoxTorch: CheckBox=findViewById(R.id.checkBox_torch)
         val checkBoxVibration:CheckBox=findViewById(R.id.checkBox_vibration)
+        var radioButtonSpeed:Long=500;
+        var textInMorse: String = "";
+
 
 
         val morseCodes= mapOf(
@@ -59,8 +64,22 @@ class MainActivity : AppCompatActivity() {
             '3' to "...--",  '4' to "....-",
             '5' to ".....",  '6' to "-....",
             '7' to "--...",  '8' to "---..",
-            '9' to "----.",  '0' to "-----"
+            '9' to "----.",  '0' to "-----",
+            ' ' to " "
         )
+        radioButtonFast.setOnClickListener{
+            if(radioButtonFast.isChecked)
+                radioButtonSpeed=300;
+        }
+        radioButtonNormal.setOnClickListener{
+            if(radioButtonNormal.isChecked)
+                radioButtonSpeed=500;
+        }
+        radioButtonSlow.setOnClickListener{
+            if(radioButtonSlow.isChecked)
+                radioButtonSpeed=1000;
+        }
+
 
         checkBoxVibration.setOnClickListener {
             if(!checkBoxTorch.isChecked and !checkBoxVibration.isChecked) {
@@ -74,33 +93,53 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        buttonStart.setOnClickListener {
-            var inputTextValue = inputText.getText().toString().lowercase()
-            //TODO функция обработки в код морзу. вывод в поле текста и включение фонарика избавится от сеткликера
-            var textInMorse: String = "";
-            for (i in inputTextValue.indices) {
-                textInMorse += morseCodes[inputTextValue[i]].toString()+ " ";
-                textView.text = textInMorse.toString()
+        fun morsecodevibra(textInMorse:String,speed:Long){
+        val vibratorService = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        for (i in textInMorse.indices) {
+            if (textInMorse[i] == '.') {
+                vibratorService.vibrate((speed))
+                sleep(speed+100)
+            }
+            if (textInMorse[i] == '-') {
+                vibratorService.vibrate(2*speed)
+                sleep(2*speed+100)
+            }
+            if (textInMorse[i] == ' ') {
+                sleep(2*speed)
+            }
+        }
+        }
+        inputText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
             }
 
-            val vibratorService = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
 
-            for (i in textInMorse.indices) {
-                if (textInMorse[i] == '.') {
-                vibratorService.vibrate(500)
-                    sleep(500L)
-                } else {
-                    if (textInMorse[i] == '-') {
-                        vibratorService.vibrate(1500)
-                        sleep(500L)
-                    } else {
-                        if (textInMorse[i] == ' ') {
-                            sleep(500L)
-                        }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                var inputTextValue = inputText.getText().toString().lowercase()
+                textInMorse="";
+                for (i in inputTextValue.indices) {
+                    if(morseCodes[inputTextValue[i]] != null){
+                    textInMorse += morseCodes[inputTextValue[i]].toString() + " ";
+                    textView.text = textInMorse.toString()}
+                    else{
+                        textInMorse="no morsecode for this letter";
+                        textView.text = textInMorse.toString()
                     }
-
                 }
 
+            }
+        })
+
+        buttonStart.setOnClickListener {
+            if(textInMorse!="no morsecode for this letter"){
+                if(checkBoxVibration.isChecked) {
+                    morsecodevibra(textInMorse,radioButtonSpeed);
+                }
+
+            }
+        }
 
                 buttonReset.setOnClickListener {
 
@@ -108,8 +147,7 @@ class MainActivity : AppCompatActivity() {
                 //TODO функция обработки в код морзу. вывод в поле текста и включение фонарика
 
 
-            }
+    }
 
 
-        }}
 }

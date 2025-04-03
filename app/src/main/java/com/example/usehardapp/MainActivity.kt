@@ -76,22 +76,21 @@ class MainActivity : AppCompatActivity() {
 
         buttonStart.setOnClickListener {
             var inputTextValue = inputText.getText().toString().lowercase()
-            //TODO функция обработки в код морзу. вывод в поле текста и включение фонарика
+            //TODO функция обработки в код морзу. вывод в поле текста и включение фонарика избавится от сеткликера
             var textInMorse: String = "";
             for (i in inputTextValue.indices) {
                 textInMorse += morseCodes[inputTextValue[i]].toString()+ " ";
                 textView.text = textInMorse.toString()
             }
 
-            for (i in textInMorse.indices) {
+            val vibratorService = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
+            for (i in textInMorse.indices) {
                 if (textInMorse[i] == '.') {
-                    val vibratorService = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                    vibratorService.vibrate(500)
+                vibratorService.vibrate(500)
                     sleep(500L)
                 } else {
                     if (textInMorse[i] == '-') {
-                        val vibratorService = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                         vibratorService.vibrate(1500)
                         sleep(500L)
                     } else {
